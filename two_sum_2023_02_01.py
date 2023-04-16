@@ -5,7 +5,7 @@ import json
 
 
 class Solution:
-    def two_sum_brute(self, nums: list[int], target: int) -> list[int]:
+    def two_sum_bruteforce(self, nums: list[int], target: int) -> list[int]:
         """
         : type nums: List[int]
         : type target: int
@@ -18,7 +18,7 @@ class Solution:
                 # print(nums[i], nums[j], total)
                 if total == target:
                     return [i, j]
-        return [-1, -1]
+        return []
 
     def two_sum_hash(self, nums: list[int], target: int) -> list[int]:
         n = len(nums)
@@ -33,23 +33,23 @@ class Solution:
             else:
                 hash_map[nums[i]] = i
                 
-        return [-1, -1]
+        return []
 
-    def two_sum_pointer(self, nums: list[int], target: int) -> list[int]:
+    def two_sum_sorted(self, nums: list[int], target: int) -> list[int]:
         n = len(nums)
         low = 0
         high = n - 1
         while low < high:
             total = nums[low] + nums[high]
             if total == target:
-                return [low, high]
+                return [low+1, high+1]
             elif total < target:
                 low += 1
             else:
                 high -= 1
-        return [-1, -1]
+        return [0, 0]
 
-    def two_sum_pointer_new(self, nums: list[int], target: int) -> list[int]:
+    def two_sum_sorted_new(self, nums: list[int], target: int) -> list[int]:
         n = len(nums)
         low = 0
         high = n - 1
@@ -57,8 +57,8 @@ class Solution:
         while low < high:
             total = nums[low] + nums[high]
             if total == target:
-                return [low, high]
-            elif total < target:  # increase low
+                return [low+1, high+1]
+            elif total < target: # increase low
                 low += 1
                 if low_fast:
                     mid_old, mid = high, (low+high)//2
@@ -76,12 +76,11 @@ class Solution:
                             high = mid - 1
                         mid_old, mid = mid, (mid + mid_old)//2
                 high_fast = False
-        return [-1, -1]
+        return [0, 0]
 
 
-def execution_time(start_time):
-    return int((time.time() - start_time) * 1.0e6)
-    # return f"{method} {(time.time() - start_time) * 1.0e6:.03f}"
+def execution_time(start_time, method):
+    print(f"{method} execution takes: {(time.time() - start_time) * 1.0e3:.03f} ms")
 
 
 def gen_save_rand_list(count, limit):
@@ -94,40 +93,39 @@ def read_rand_list() -> int:
     with open('random_data.json') as json_file:
         json_data = json.load(json_file)
         json_data.sort()
-    return json_data
+        
+    print(json_data[:15])
+    print(json_data[len(json_data) - 15:])
+
+    return json_data, json_data[42] + json_data[357]
 
 
 def main():
-    nums = read_rand_list()
-    limits = [(3, 997), (221, 400), (221, 995), (201, 601), (900, 930), (997, 998), (1, 8)]
-    print(nums[:15], '\n', nums[len(nums) - 15:])
-    print(" low  high target             Brute                 Hash              Two Pointer        Two Pointer New")
-    for limit in limits:
-        target = nums[limit[0]] + nums[limit[1]]
-        print(f"{limit[0]: 4d}  {limit[1]: 4d} {target:6}", end="     ")
+    nums, target = read_rand_list()
+    print(target)
 
-        obj_solution = Solution()
+    start_time_hash = time.time()
+    obj_solution = Solution()
 
-        start_time = time.time()
-        result_brute = '{}    '.format(obj_solution.two_sum_brute(nums, target))
-        result_brute = f'{result_brute[:10]} {execution_time(start_time): 6d}'
+    result_hash = obj_solution.two_sum_hash(nums, target)
+    execution_time(start_time_hash, "hashing")
+    print(result_hash)
 
-        start_time = time.time()
-        result_hash = '{}    '.format(obj_solution.two_sum_hash(nums, target))
-        result_hash = f'{result_hash[:10]} {execution_time(start_time): 6d}'
+    start_time_including_sort = time.time()
+    nums.sort()
+    start_time_presorted = time.time()
+    result_sorted = obj_solution.two_sum_sorted(nums, target)
+    execution_time(start_time_including_sort, "2 pointer: including sorting")
+    execution_time(start_time_presorted, "2 pointer: pre sorted")
+    print(result_sorted)
 
-        start_time = time.time()
-        result_two_pointer = '{}    '.format(obj_solution.two_sum_pointer(nums, target))
-        result_two_pointer = f'{result_two_pointer[:10]} {execution_time(start_time): 6d}'
-
-        start_time = time.time()
-        result_two_pointer_new = '{}    '.format(obj_solution.two_sum_pointer_new(nums, target))
-        result_two_pointer_new = f'{result_two_pointer_new[:10]} {execution_time(start_time): 6d}'
-
-        print(result_brute, end="     ")
-        print(result_hash, end="     ")
-        print(result_two_pointer, end="     ")
-        print(result_two_pointer_new)
+    start_time_including_sort = time.time()
+    nums.sort()
+    start_time_presorted = time.time()
+    result_sorted = obj_solution.two_sum_sorted_new(nums, target)
+    execution_time(start_time_including_sort, "2 pointer new: including sorting")
+    execution_time(start_time_presorted, "2 pointer new: pre sorted")
+    print(result_sorted)
     
 
 if __name__ == "__main__":

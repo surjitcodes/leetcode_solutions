@@ -1,0 +1,73 @@
+import sys
+import time
+import random
+import json
+
+
+class Solution:
+    def three_sum(self, nums: list[int]) -> list[list[int]]:
+        nums.sort() # Sorting essential to prevent duplicacy
+        output = []
+
+        for i in range(len(nums)):
+            if nums[i] > 0:
+                break
+            if i == 0 or nums[i] != nums[i-1]:  # It is first element or non-duplicate
+                self.two_sum_hash(nums, i, output)
+
+        return output
+
+    def two_sum_hash(self, nums: list[int], i: int, output: list[list[int]]):
+        hash_set = set()
+        j = i + 1
+        while j < len(nums):
+            complement = -(nums[i] + nums[j])
+            if complement in hash_set:
+                output.append([nums[i], complement, nums[j]])
+                while j + 1 < len(nums) and nums[j+1] == nums[j]:
+                    j += 1
+
+            hash_set.add(nums[j])
+
+            j += 1
+
+
+def execution_time(start_time):
+    return int((time.time() - start_time) * 1.0e6)
+    # return f"{method} {(time.time() - start_time) * 1.0e6:.03f}"
+
+
+def gen_save_rand_list(count, limit):
+    nums = random.sample(range(1, limit), count)
+    with open('random_data.json', 'w') as f:
+        json.dump(nums, f)
+
+
+def read_rand_list() -> int:
+    with open('random_data.json') as json_file:
+        json_data = json.load(json_file)
+        #  json_data.sort()
+    return json_data
+
+
+def main():
+    nums = read_rand_list()
+
+    i = 0
+    while i < len(nums):
+        nums[i] = -nums[i]
+        i += 2
+
+    # nums = [-2, -1, -1, -1, -1, 0, 0, 0, 0, 1, 2, 4]
+    print(nums[:20])
+
+    start_time = time.time()
+    obj_sol = Solution()
+    result = obj_sol.three_sum(nums)
+    print(result)
+    output = f'Count = {len(result)} Time = {execution_time(start_time): 6d}'
+    print(output)
+
+
+if __name__ == "__main__":
+    main()
