@@ -60,7 +60,7 @@ def read_rand_list() -> int:
 
 
 def main():
-    num1 = "384"
+    num1 = "389"
     num2 = "167"
 
     print(num1[:20], num2[:20])
